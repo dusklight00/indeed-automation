@@ -63,7 +63,6 @@ def extract_first_n_page_result(driver, job_title, location, n_pages, sort_by_da
   final_result = []
   for page in tqdm(range(n_pages)):
     result = get_nth_page_result(driver, job_title, location, page, sort_by_date)
-    pprint(result)
     final_result = final_result + result
     
   return final_result
