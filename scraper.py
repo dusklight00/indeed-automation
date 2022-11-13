@@ -5,16 +5,13 @@ from utils import save_dict_as_csv
 driver = SeleniumWrapper()
 driver.setup_driver(headless=False)
 
-JOB_TITLE = "apprenticeship"
-LOCATION = "London, Greater London"
-PAGE_THRESHOLD = 2
-SAVE_FILE_NAME = "sample.csv"
+JOB_TITLE = "Credit Control"
+LOCATION = ""
+PAGE_THRESHOLD = 60
+SAVE_FILE_NAME = "result.csv"
 
 filter_dates = [
-  "1 day ago",
-  "2 days ago",
-  "3 days ago",
-  "4 days ago"
+  "Just posted"
 ]
 
 results = extract_first_n_page_result(driver, JOB_TITLE, LOCATION, PAGE_THRESHOLD)

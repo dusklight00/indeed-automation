@@ -1,6 +1,4 @@
-from wrappers.selenium_wrapper import SeleniumWrapper
 from bs4 import BeautifulSoup
-from pprint import pprint
 from tqdm import tqdm
 
 BASE_URL = "https://uk.indeed.com"
@@ -32,12 +30,12 @@ def extract_result(result_code):
     job_link = BASE_URL + filtered_results[0].find("a", {"class": "jcs-JobTitle"}, href=True)["href"]
 
     job_info = {
-      "job_title": job_title,
-      "rating": rating,
-      "company_name": company_name,
-      "day_posted": day_posted,
-      "salary": salary,
-      "job_link": job_link
+      "Job Ttile": job_title,
+      "Rating": rating,
+      "Company Name": company_name,
+      "Day Posted": day_posted,
+      "Salary": salary,
+      "Job Link": job_link
     }
 
     jobs.append(job_info)
@@ -66,7 +64,7 @@ def extract_first_n_page_result(driver, job_title, location, n_pages):
 def filter_result_by_posted_dates(results, filter_dates):
   filtered_result = []
   for result in results: 
-    if result["day_posted"] in filter_dates:
+    if result["Day Posted"] in filter_dates:
       filtered_result.append(result)
   return filtered_result
 
