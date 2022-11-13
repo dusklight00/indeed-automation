@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from tqdm import tqdm
+from pprint import pprint
 
 BASE_URL = "https://uk.indeed.com"
 
@@ -25,7 +26,7 @@ def extract_result(result_code):
     job_title = result.find("span").get_text() if result.find("span") != None else None
     rating = result.find("span", {"class": "ratingNumber"}).find("span").get_text() if result.find("span", {"class": "ratingNumber"}) != None else None
     company_name = result.find("span", {"class": "companyName"}).get_text() if result.find("span", {"class": "companyName"}) != None else None
-    day_posted = result.find("span", {"class": "date"}).get_text().replace("PostedPosted ", "", 1) if result.find("span", {"class": "date"}) != None else None
+    day_posted = result.find("span", {"class": "date"}).get_text().replace("PostedPosted ", "", 1).replace("PostedJust ", "Just ").replace("PostedToday", "Today") if result.find("span", {"class": "date"}) != None else None
     salary = result.find("div", {"class": "attribute_snippet"}).get_text().replace(" a year", "") if result.find("div", {"class": "attribute_snippet"}) != None else None
     job_link = BASE_URL + filtered_results[0].find("a", {"class": "jcs-JobTitle"}, href=True)["href"]
 
@@ -42,17 +43,18 @@ def extract_result(result_code):
   
   return jobs
 
-def get_nth_result_page_code(driver, job_title, location, page_no):
-  driver.get(BASE_URL + "/jobs?q=" + job_title + "&l=" + location + "&start=" + str(page_no * 10))
+def get_nth_result_page_code(driver, job_title, location, page_no, sort_by_date = True):
+  URL = BASE_URL + "/jobs?q=" + job_title + "&l=" + location + "&start=" + str(page_no * 10) + "&sort=date" if sort_by_date else BASE_URL + "/jobs?q=" + job_title + "&l=" + location + "&start=" + str(page_no * 10)
+  driver.get(URL)
   result_code = get_result_code(driver)
   return result_code
 
-def get_nth_page_result(driver, job_title, location, page_no):
-  result_page_code = get_nth_result_page_code(driver, job_title, location, page_no)
+def get_nth_page_result(driver, job_title, location, page_no, sort_by_date):
+  result_page_code = get_nth_result_page_code(driver, job_title, location, page_no, sort_by_date)
   extracted_result = extract_result(result_page_code)
   return extracted_result
 
-def extract_first_n_page_result(driver, job_title, location, n_pages):
+def extract_first_n_page_result(driver, job_title, location, n_pages, sort_by_date = True):
   print(f"[*] Extracting {n_pages} results ...")
 
   if n_pages == "full":
@@ -60,7 +62,8 @@ def extract_first_n_page_result(driver, job_title, location, n_pages):
 
   final_result = []
   for page in tqdm(range(n_pages)):
-    result = get_nth_page_result(driver, job_title, location, page)
+    result = get_nth_page_result(driver, job_title, location, page, sort_by_date)
+    pprint(result)
     final_result = final_result + result
     
   return final_result
@@ -69,8 +72,10 @@ def extract_first_n_page_result(driver, job_title, location, n_pages):
 def filter_result_by_posted_dates(results, filter_dates):
   filtered_result = []
   for result in results: 
+    print(result["Day Posted"] in [])
     if result["Day Posted"] in filter_dates:
       filtered_result.append(result)
+  print(filtered_result)
   return filtered_result
 
 def get_total_pages(driver, job_title, location):

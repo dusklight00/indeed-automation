@@ -9,12 +9,13 @@ JOB_TITLE = "Credit Control"
 LOCATION = ""
 PAGE_THRESHOLD = "full"
 SAVE_FILE_NAME = "result.csv"
+SORTED_BY_DATE = True
 
 filter_dates = [
   "Just posted"
 ]
 
-results = extract_first_n_page_result(driver, JOB_TITLE, LOCATION, PAGE_THRESHOLD)
+results = extract_first_n_page_result(driver, JOB_TITLE, LOCATION, PAGE_THRESHOLD, SORTED_BY_DATE)
 filtered_result = filter_result_by_posted_dates(results, filter_dates)
 
 save_dict_as_csv(
