@@ -54,10 +54,15 @@ def get_nth_page_result(driver, job_title, location, page_no):
 
 def extract_first_n_page_result(driver, job_title, location, n_pages):
   print(f"[*] Extracting {n_pages} results ...")
+
+  if n_pages == "full":
+    n_pages = get_total_pages(driver, job_title, location)
+
   final_result = []
   for page in tqdm(range(n_pages)):
     result = get_nth_page_result(driver, job_title, location, page)
     final_result = final_result + result
+    
   return final_result
 
 
@@ -68,26 +73,11 @@ def filter_result_by_posted_dates(results, filter_dates):
       filtered_result.append(result)
   return filtered_result
 
-# def extract_page_result_until_day_posted(driver, job_title, location, day_posted):
-#   final_result = []
-
-#   is_day_posted_found = False
-#   page = 0
-#   while True:
-#     results = get_nth_page_result(driver, job_title, location, page)
-
-    # if not is_day_posted_found and (results[-1]["day_posted"] == day_posted):
-    #   is_day_posted_found = True
-
-    # if is_day_posted_found and (results[-1]["day_posted"] != day_posted):
-    #   is_day_posted_local_found = False
-    #   for result in results:
-    #     final_result = final_result + result
-    #     if not is_day_posted_local_found and (result["day_posted"] == day_posted):
-    #       is_day_posted_local_found = True
-    #     if is_day_posted_local_found and (result["day_posted"] != day_posted):
-    #       break
-    #   break
-
-    # final_result = final_result + results
-    # page += 1
+def get_total_pages(driver, job_title, location):
+  MAX_START_OFFSET = 99999
+  LAST_BUTTON = "/html/body/main/div/div[1]/div/div/div[5]/div[1]/nav/div[4]/button"
+  url = BASE_URL + "/jobs?q=" + job_title + "&l=" + location + "&start=" + str(MAX_START_OFFSET)
+  driver.get(url)
+  driver.load_wait(LAST_BUTTON)
+  last_button = driver.load_element(LAST_BUTTON)
+  return int(last_button.text)
